@@ -1,3 +1,4 @@
+require("dotenv").config();
 const {
   SlashCommandBuilder,
   EmbedBuilder,
@@ -74,7 +75,7 @@ module.exports = {
         name: `${interaction.client.user.username}`,
         iconURL: `${interaction.client.user.displayAvatarURL()}`,
       })
-      .setColor("white");
+      .setColor("White");
     await interaction.reply({ ephemeral: true, embeds: [toAdmin] });
     try {
       const toMember = new EmbedBuilder()
@@ -93,8 +94,29 @@ module.exports = {
           name: `${interaction.client.user.username}`,
           iconURL: `${interaction.client.user.displayAvatarURL()}`,
         })
-        .setColor("white");
-      return user.send({ ephemeral: false, embeds: [toMember] });
+        .setColor("White");
+      await user.send({ ephemeral: false, embeds: [toMember] });
     } catch (e) {}
+    const adminChannel = await interaction.guild.channels.fetch(
+      process.env.ADMIN_CHANNEL
+    );
+
+    const toMember = new EmbedBuilder()
+      .setTitle("⚠️ | Roster Updated - Member Removed")
+      .setThumbnail(interaction.client.user.displayAvatarURL())
+      .setDescription(
+        `> Dear admins, the roster has been updated as a member has been removed from the roster. Please check the details down below:\n\n> **Removed member**: ${user}\n> **Admin:** ${
+          interaction.member
+        }\n> **Reason:** ${
+          reason ? reason : "No reason specified"
+        }.\n> **Occured at:** ${getCurrentDateTime()}\n### ⚙️ Control Options\n> - */roster*: To view the full roster\n> - */delete (user)*: To remove a user from the roster\n> - */make-member (user)*: To add a user to the roster.`
+      )
+      .setTimestamp()
+      .setAuthor({
+        name: `${interaction.client.user.username}`,
+        iconURL: `${interaction.client.user.displayAvatarURL()}`,
+      })
+      .setColor("White");
+    await adminChannel.send({ embeds: [toMember] });
   },
 };

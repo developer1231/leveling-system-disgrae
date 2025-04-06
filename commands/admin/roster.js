@@ -61,11 +61,12 @@ module.exports = {
         `> Dear ${interaction.member}, please view the current team roster down below:\n${message}\n### ⚙️ Control Options\n> - Use */delete (user)* to delete a user from the roster.\n> - Use */make-member (user)* to add a user to the roster.\n\n> Unsure about what the statusses mean? Please use */info* to receive more information about all statusses and their meaning.`
       )
       .setTimestamp()
+      .setThumbnail(interaction.client.user.displayAvatarURL())
       .setAuthor({
         name: `${interaction.client.user.username}`,
         iconURL: `${interaction.client.user.displayAvatarURL()}`,
       })
-      .setColor("white");
+      .setColor("White");
     await interaction.reply({ ephemeral: true, embeds: [toAdmin] });
   },
 };
