@@ -3,8 +3,7 @@ const {
   EmbedBuilder,
   PermissionFlagsBits,
 } = require("discord.js");
-const fs = require("fs");
-const n = require("../../config.json");
+
 const {
   execute,
   makeid,
@@ -29,7 +28,7 @@ module.exports = {
           name: `${interaction.client.user.username}`,
           iconURL: `${interaction.client.user.displayAvatarURL()}`,
         })
-        .setColor("#6488EA");
+        .setColor("DarkRed");
       return interaction.reply({ ephemeral: true, embeds: [Embed] });
     }
     let allMemberData = await execute(`SELECT * FROM roster;`);
@@ -59,14 +58,14 @@ module.exports = {
     const toAdmin = new EmbedBuilder()
       .setTitle("📝 | Current Roster")
       .setDescription(
-        `> Dear ${interaction.member}, please view the current team roster down below:\n\n${message}\n⚙️ ### Control Options\n> - Use */delete (user)* to delete a user from the roster.\n> - Use */make-member (user)* to add a user to the roster.`
+        `> Dear ${interaction.member}, please view the current team roster down below:\n${message}\n### ⚙️ Control Options\n> - Use */delete (user)* to delete a user from the roster.\n> - Use */make-member (user)* to add a user to the roster.\n\n> Unsure about what the statusses mean? Please use */info* to receive more information about all statusses and their meaning.`
       )
       .setTimestamp()
       .setAuthor({
         name: `${interaction.client.user.username}`,
         iconURL: `${interaction.client.user.displayAvatarURL()}`,
       })
-      .setColor("#6488EA");
+      .setColor("white");
     await interaction.reply({ ephemeral: true, embeds: [toAdmin] });
   },
 };

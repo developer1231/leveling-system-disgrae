@@ -59,14 +59,14 @@ async function Initialization() {
   try {
     await run(`create table if not exists roster (
       member_id TEXT PRIMARY KEY
-      )`);
+      );`);
     console.log("created table roster");
     await run(`create table if not exists status (
       member_id TEXT PRIMARY KEY,
       status TEXT,
       timestamp TEXT, 
       approved TEXT,
-      FOREIGN KEY (member_id) REFERENCES roster(member_id) ON DELETE CASCADEß`);
+      FOREIGN KEY (member_id) REFERENCES roster(member_id) ON DELETE CASCADE);`);
     console.log("created table status");
   } catch (err) {
     console.error("Initialization error:", err);

@@ -3,8 +3,7 @@ const {
   EmbedBuilder,
   PermissionFlagsBits,
 } = require("discord.js");
-const fs = require("fs");
-const n = require("../../config.json");
+// todo : add admin messages
 const {
   execute,
   makeid,
@@ -43,7 +42,7 @@ module.exports = {
           name: `${interaction.client.user.username}`,
           iconURL: `${interaction.client.user.displayAvatarURL()}`,
         })
-        .setColor("#6488EA");
+        .setColor("DarkRed");
       return interaction.reply({ ephemeral: true, embeds: [Embed] });
     }
     let existingUser = await execute(
@@ -54,28 +53,28 @@ module.exports = {
       const Embed = new EmbedBuilder()
         .setTitle(":x: | User doesn't exist")
         .setDescription(
-          `> This command is used to delete users from the team roster such that they are unable to use the */action* command.\n\n> This user, ${user}, however, doesn't exist in the database and therefore is not yet part of the team. You cannot remove the user.\n⚙️ ### Control Options\n> - To add the user to the roster, use */make-member (${user})*\n> - To view the current roster, use */roster*.`
+          `> This command is used to delete users from the team roster such that they are unable to use the */action* command.\n\n> This user, ${user}, however, doesn't exist in the database and therefore is not yet part of the team. You cannot remove the user.\n### ⚙️ Control Options\n> - To add the user to the roster, use */make-member (${user})*\n> - To view the current roster, use */roster*.`
         )
         .setTimestamp()
         .setAuthor({
           name: `${interaction.client.user.username}`,
           iconURL: `${interaction.client.user.displayAvatarURL()}`,
         })
-        .setColor("#6488EA");
+        .setColor("DarkRed");
       return interaction.reply({ ephemeral: true, embeds: [Embed] });
     }
     await execute(`DELETE FROM roster WHERE member_id = ?`, [user.id]);
     const toAdmin = new EmbedBuilder()
       .setTitle(":white_check_mark: | Action Succesful")
       .setDescription(
-        `> The user has successfully been removed from the roster.\n> They will now be unable to use the following commands:\n> - */action*\n⚙️ ### Control Options\n> - */roster*: To view the full roster\n> - */delete (user)*: To remove a user from the roster\n> - */make-member (user)*: To add a user to the roster.`
+        `> The user has successfully been removed from the roster.\n> They will now be unable to use the following commands:\n> - */action*\n### ⚙️ Control Options\n> - */roster*: To view the full roster\n> - */delete (user)*: To remove a user from the roster\n> - */make-member (user)*: To add a user to the roster.`
       )
       .setTimestamp()
       .setAuthor({
         name: `${interaction.client.user.username}`,
         iconURL: `${interaction.client.user.displayAvatarURL()}`,
       })
-      .setColor("#6488EA");
+      .setColor("white");
     await interaction.reply({ ephemeral: true, embeds: [toAdmin] });
     try {
       const toMember = new EmbedBuilder()
@@ -94,7 +93,7 @@ module.exports = {
           name: `${interaction.client.user.username}`,
           iconURL: `${interaction.client.user.displayAvatarURL()}`,
         })
-        .setColor("#6488EA");
+        .setColor("white");
       return user.send({ ephemeral: false, embeds: [toMember] });
     } catch (e) {}
   },

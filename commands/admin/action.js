@@ -4,8 +4,6 @@ const {
   EmbedBuilder,
   PermissionFlagsBits,
 } = require("discord.js");
-const fs = require("fs");
-const n = require("../../config.json");
 const {
   execute,
   makeid,
@@ -14,8 +12,8 @@ const {
 } = require("../../database/database");
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName("roster")
-    .setDescription(`Display the team roster`),
+    .setName("change-status")
+    .setDescription(`Take a status action`),
   async execute(interaction) {
     if (
       !interaction.member.permissions.has(PermissionFlagsBits.Administrator)
@@ -30,7 +28,7 @@ module.exports = {
           name: `${interaction.client.user.username}`,
           iconURL: `${interaction.client.user.displayAvatarURL()}`,
         })
-        .setColor("#6488EA");
+        .setColor("DarkRed");
       return interaction.reply({ ephemeral: true, embeds: [Embed] });
     }
     let allMemberData = await execute(`SELECT * FROM roster;`);
@@ -67,7 +65,7 @@ module.exports = {
         name: `${interaction.client.user.username}`,
         iconURL: `${interaction.client.user.displayAvatarURL()}`,
       })
-      .setColor("#6488EA");
+      .setColor("white");
     await interaction.reply({ ephemeral: true, embeds: [toAdmin] });
   },
 };
