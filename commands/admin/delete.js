@@ -30,17 +30,6 @@ module.exports = {
   async execute(interaction) {
     let user = interaction.options.getUser("user");
     const reason = interaction.options.getString("reason");
-    //  await run(`create table if not exists roster (
-    //      member_id TEXT PRIMARY KEY
-    //      )`);
-    //    console.log("created table roster");
-    //    await run(`create table if not exists status (
-    //      member_id TEXT PRIMARY KEY,
-    //      status TEXT,
-    //      timestamp TEXT,
-    //      approved TEXT,
-    //      FOREIGN KEY (member_id) REFERENCES roster(member_id) ON DELETE CASCADEß`);
-    //    console.log("created table status");
     if (
       !interaction.member.permissions.has(PermissionFlagsBits.Administrator)
     ) {
