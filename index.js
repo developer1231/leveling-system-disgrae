@@ -248,6 +248,7 @@ client.on(Events.MessageCreate, async (message) => {
             let freeChannel = message.guild.channels.cache.find(
               (c) => c.id === process.env.FREE_CHANNEL_ID
             );
+            sad;
 
             const newEmbed = EmbedBuilder.from(hotRepeatsEmbed)
               .setAuthor({
