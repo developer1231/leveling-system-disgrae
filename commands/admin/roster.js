@@ -48,17 +48,31 @@ module.exports = {
         `SELECT * FROM status WHERE member_id = ?`,
         [entry.member_id]
       );
-      message += `\n> <@${entry.member_id}> - ${
-        statusData[0].status
-      }\n> **Last Status Update**: <t:${Math.round(
-        Number(statusData[0].timestamp) / 1000
-      )}:R>\n`;
+      const statusDataInMs = Number(statusData[0].amount) * 24 * 60 * 60 * 1000; // days → ms
+      const resultDate = new Date(
+        Number(statusData[0].timestamp) + statusDataInMs
+      );
+
+      message +=
+        statusData[0].status !== "🟢 Active"
+          ? `\n> <@${entry.member_id}> - ${
+              statusData[0].status
+            }\n> **Expected Return:** <t:${Math.round(
+              resultDate / 1000
+            )}:R>\n> **Last Status Update**: <t:${Math.round(
+              Number(statusData[0].timestamp) / 1000
+            )}:R>\n`
+          : `\n> <@${entry.member_id}> - ${
+              statusData[0].status
+            }\n> **Last Status Update**: <t:${Math.round(
+              Number(statusData[0].timestamp) / 1000
+            )}:R>\n`;
     }
 
     const toAdmin = new EmbedBuilder()
       .setTitle("📝 | Current Roster")
       .setDescription(
-        `> Dear ${interaction.member}, please view the current team roster down below:\n${message}\n### ⚙️ Control Options\n> - Use */delete (user)* to delete a user from the roster.\n> - Use */make-member (user)* to add a user to the roster.\n\n> Unsure about what the statusses mean? Please use */info* to receive more information about all statusses and their meaning.`
+        `> Dear ${interaction.member}, please view the current team roster down below:\n${message}\n### ⚙️ Control Options\n> - Use */delete (user)* to delete a user from the roster.\n> - Use */make-member (user)* to add a user to the roster.`
       )
       .setTimestamp()
       .setThumbnail(interaction.client.user.displayAvatarURL())

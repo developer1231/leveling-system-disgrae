@@ -66,8 +66,8 @@ module.exports = {
     }
     await execute(`INSERT INTO roster(member_id) VALUES (?)`, [user.id]);
     await execute(
-      `INSERT INTO status(member_id, status, timestamp, approved) VALUES (?, ?, ? ,?)`,
-      [user.id, "🟢 Active", getCurrentTimestamp(), "true"]
+      `INSERT INTO status(member_id, status, timestamp, approved, amount) VALUES (?, ?, ? ,?, ?)`,
+      [user.id, "🟢 Active", getCurrentTimestamp(), "true", null]
     );
     const toAdmin = new EmbedBuilder()
       .setTitle(":white_check_mark: | Action Succesful")

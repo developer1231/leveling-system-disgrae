@@ -66,10 +66,11 @@ async function Initialization() {
       status TEXT,
       timestamp TEXT, 
       approved TEXT,
+      amount TEXT,
       FOREIGN KEY (member_id) REFERENCES roster(member_id) ON DELETE CASCADE);`);
     await run(`create table if not exists messages (
         message_id TEXT PRIMARY KEY,
-        member_id TEXT);`);
+        member_id TEXT, amount TEXT);`);
     console.log("created table status");
   } catch (err) {
     console.error("Initialization error:", err);

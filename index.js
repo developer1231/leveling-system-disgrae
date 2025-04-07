@@ -151,8 +151,8 @@ client.on(Events.InteractionCreate, async (interaction) => {
         components: [action],
       });
       await execute(
-        `INSERT INTO messages (message_id, member_id) VALUES (?, ?)`,
-        [k.id, interaction.member.id]
+        `INSERT INTO messages (message_id, member_id, amount) VALUES (?, ?, ?)`,
+        [k.id, interaction.member.id, Number(duration)]
       );
       await interaction.reply({
         ephemeral: true,
@@ -255,8 +255,13 @@ client.on(Events.InteractionCreate, async (interaction) => {
         components: [actionrows],
       });
       await execute(
-        `UPDATE status SET status = ?, timestamp = ? WHERE member_id = ?`,
-        [userData[0].approved, getCurrentTimestamp(), toUser.id]
+        `UPDATE status SET status = ?, timestamp = ?, amount = ? WHERE member_id = ?`,
+        [
+          userData[0].approved,
+          getCurrentTimestamp(),
+          messageData[0].amount,
+          toUser.id,
+        ]
       );
       await execute(`DELETE FROM messages WHERE message_id = ?`, [
         interaction.message.id,
