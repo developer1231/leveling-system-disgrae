@@ -16,7 +16,7 @@ const {
 } = require("../../database/database");
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName("change-status")
+    .setName("action")
     .setDescription(`Take a status action`)
     .addStringOption((option) =>
       option
@@ -63,8 +63,12 @@ module.exports = {
 
       return interaction.reply({ ephemeral: true, embeds: [Embed] });
     }
-    const oldStatus = userData[0].status;
-    const lastUpdated = userData[0].timestamp;
+    console.log(userData[0]);
+    let rosterData = await execute(`SELECT * FROM status WHERE member_id = ?`, [
+      userData[0].member_id,
+    ]);
+    const oldStatus = rosterData[0].status;
+    const lastUpdated = rosterData[0].timestamp;
     if (newStatus == "🟢 Active") {
       // set status, and send message.
       const adminChannel = await interaction.guild.channels.fetch(
@@ -89,7 +93,7 @@ module.exports = {
       await adminChannel.send({ embeds: [toAdmin] });
       await execute(
         `UPDATE status SET status = ?, timestamp = ? WHERE member_id = ?`,
-        [newStatus, getCurrentDateTime(), interaction.member.id]
+        [newStatus, getCurrentTimestamp(), interaction.member.id]
       );
       await interaction.reply({
         ephemeral: true,

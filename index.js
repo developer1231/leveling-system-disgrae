@@ -1,7 +1,11 @@
 require("dotenv").config();
 const fs = require("node:fs");
 const path = require("node:path");
-const { execute, getCurrentDateTime } = require("./database/database");
+const {
+  execute,
+  getCurrentDateTime,
+  getCurrentTimestamp,
+} = require("./database/database");
 
 const {
   REST,
@@ -152,7 +156,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
       );
       await interaction.reply({
         ephemeral: true,
-        content: `> :white_check_mark: You have successfully requested your leave. Please wait up to 1-2 days for the admins to process your request. Whether your leave has been accepted or denied will be communicated over through your DM. **Make sure that your DM is open so that we can send you a message**.`,
+        content: `> :white_check_mark: You have successfully requested your leave. Please wait up to 1-2 days for the admins to process your request. Whether your leave has been accepted or denied will be communicated over through your DM.\n> **Make sure that your DM is open so that we can send you a message**.`,
       });
     }
   }
@@ -201,7 +205,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
           .setColor("DarkRed")
           .setTitle(`❌ | Leave Request Denied`)
           .setDescription(
-            `> Dear ${toUser}, you recently requested a leave. The request has been processed. Please view the verdict below:\n\n**This request has been denied by ${
+            `> Dear ${toUser}, you recently requested a leave. The request has been processed. Please view the verdict below:\n\n> **This request has been denied by ${
               interaction.member
             } at ${getCurrentDateTime()}**\n> Would you like to appeal? That is possible. Please contact ${
               interaction.member
@@ -252,7 +256,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
       });
       await execute(
         `UPDATE status SET status = ?, timestamp = ? WHERE member_id = ?`,
-        [userData[0].approved, getCurrentDateTime(), toUser.id]
+        [userData[0].approved, getCurrentTimestamp(), toUser.id]
       );
       await execute(`DELETE FROM messages WHERE message_id = ?`, [
         interaction.message.id,
@@ -262,7 +266,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
           .setColor("DarkGreen")
           .setTitle(`✅ | Leave Request Accepted`)
           .setDescription(
-            `> Dear ${toUser}, you recently requested a leave. The request has been processed. Please view the verdict below:\n\n**This request has been accepted by ${
+            `> Dear ${toUser}, you recently requested a leave. The request has been processed. Please view the verdict below:\n\n> **This request has been accepted by ${
               interaction.member
             } at ${getCurrentDateTime()}**\n> Your status has automatically been changed to ${
               userData[0].approved
