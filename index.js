@@ -1,3 +1,7 @@
+// all we need:
+// admin command to add shit
+// fix desings of all
+
 require("dotenv").config();
 const fs = require("node:fs");
 const path = require("node:path");
@@ -6,7 +10,7 @@ const {
   getCurrentDateTime,
   getCurrentTimestamp,
 } = require("./database/database");
-
+const { getLevelFromXP } = require("./calculator");
 const {
   REST,
   Routes,
@@ -95,196 +99,182 @@ for (const file of eventFiles) {
   }
 }
 
+const talkedMap = new Map();
+const voiceJoinTimestamps = new Map();
+
+async function updateUserAndNotify(message, member) {
+  const config = JSON.parse(fs.readFileSync("./settings.json", "utf8"));
+
+  let newUserData = await execute(`SELECT * FROM users WHERE member_id = ?`, [
+    message ? message.member.id : member.id,
+  ]);
+
+  const xp = newUserData[0].xp;
+  const userLevel = newUserData[0].current_level;
+  const newLevel = getLevelFromXP(xp);
+
+  if (userLevel !== newLevel && config.levelup) {
+    // Update level in DB
+    await execute(`UPDATE users SET current_level = ? WHERE member_id = ?`, [
+      newLevel,
+      message ? message.member.id : member.id,
+    ]);
+
+    // Fetch member object
+    const guildMember = message
+      ? message.member
+      : await member.guild.members.fetch(member.id);
+
+    // Build role name (e.g., "Level 5")
+    const roleName = `Level ${newLevel}`;
+
+    // Find or create role
+    let role = guildMember.guild.roles.cache.find((r) => r.name === roleName);
+
+    if (!role) {
+      role = await guildMember.guild.roles.create({
+        name: roleName,
+        color: "Random", // You can choose a fixed color if you like
+        reason: `Auto-created for level ${newLevel}`,
+      });
+    }
+
+    // Give role to user
+    if (!guildMember.roles.cache.has(role.id)) {
+      await guildMember.roles.add(role);
+    }
+
+    // Send level-up message
+    const channel = await (message
+      ? message.guild.channels.fetch(config.channel_id)
+      : member.guild.channels.fetch(config.channel_id));
+
+    if (channel && channel.isTextBased()) {
+      channel.send(
+        `🎉 Congrats ${guildMember}! You leveled up to **Level ${newLevel}** and got the **${roleName}** role!`
+      );
+    }
+  }
+}
 client.on(Events.InteractionCreate, async (interaction) => {
   let command = client.commands.get(interaction.commandName);
   if (interaction.isCommand()) {
     command.execute(interaction);
   }
-  if (interaction.isModalSubmit()) {
-    if (interaction.customId === "reason-modal") {
-      let userData = await execute(`SELECT * FROM status WHERE member_id = ?`, [
-        interaction.member.id,
+});
+
+async function getUserIncrementMultiplier(member) {
+  const config = JSON.parse(fs.readFileSync("./settings.json", "utf8"));
+  const maxIncrement = config.max_increment || 1;
+
+  const allIncrements = await execute(`SELECT * FROM increments`);
+  let totalIncrement = 0;
+
+  for (const row of allIncrements) {
+    if (member.roles.cache.has(row.role_id)) {
+      totalIncrement += row.increment;
+    }
+  }
+
+  // Cap at max_increment
+  if (totalIncrement > maxIncrement) {
+    totalIncrement = maxIncrement;
+  }
+
+  return totalIncrement || 1;
+}
+client.on("voiceStateUpdate", async (oldState, newState) => {
+  let blacklist = await execute(
+    `SELECT * FROM blacklist WHERE channel_id = ?`,
+    [oldState.channelId]
+  );
+  if (blacklist.length > 0) return;
+  if (newState.member.user.bot) return;
+
+  const memberId = newState.member.id;
+
+  if (!oldState.channelId && newState.channelId) {
+    voiceJoinTimestamps.set(memberId, Date.now());
+  }
+
+  if (oldState.channelId && !newState.channelId) {
+    const joinTime = voiceJoinTimestamps.get(memberId);
+    if (!joinTime) return;
+
+    const leaveTime = Date.now();
+    const durationMs = leaveTime - joinTime;
+    const minutesInVoice = Math.floor(durationMs / 60000);
+
+    if (minutesInVoice >= 1) {
+      let baseXpToGive = minutesInVoice * 4;
+
+      const guildMember = newState.member;
+      const multiplier = await getUserIncrementMultiplier(guildMember);
+      const finalXpToGive = baseXpToGive * multiplier;
+
+      let userData = await execute(`SELECT * FROM users WHERE member_id = ?`, [
+        memberId,
       ]);
-      let reason = interaction.fields.getTextInputValue("reason");
-      let duration = interaction.fields.getTextInputValue("duration");
-      if (isNaN(Number(duration))) {
-        return interaction.reply({
-          ephemeral: true,
-          content: `> :x: You must provide an actual duration in days.\n> Example: 12, or 15.`,
-        });
+      if (userData.length == 0) {
+        await execute(
+          `INSERT INTO users (member_id, xp, current_level, voice, messages) VALUES (?, ?, ?, ?, ?)`,
+          [
+            memberId,
+            finalXpToGive,
+            Math.floor(getLevelFromXP(finalXpToGive)),
+            minutesInVoice,
+            0,
+          ]
+        );
+      } else {
+        await execute(
+          `UPDATE users SET xp = xp + ?, voice = voice + ? WHERE member_id = ?`,
+          [finalXpToGive, minutesInVoice, memberId]
+        );
       }
-      const adminChannel = await interaction.guild.channels.fetch(
-        process.env.ADMIN_CHANNEL
-      );
-      const toAdmin = new EmbedBuilder()
-        .setTitle("⚠️ | Leave Requested")
-        .setThumbnail(interaction.member.user.displayAvatarURL())
-        .setDescription(
-          `> Dear admins, a member has planned a leave and requested to change their status. Please view the details down below:\n\n> **User:** ${
-            interaction.member
-          }\n> **Current Status:** ${
-            userData[0].status
-          }\n> **Requested Status:** ${
-            userData[0].approved
-          }\n> **Duration of Leave:** ${duration}d\n> **Reason for the leave**: ${reason}\n> **Previous Update Occured At:** <t:${Math.round(
-            userData[0].timestamp / 1000
-          )}:R>\n\n> Please use the buttons below to either **Deny** or **Accept** this request.`
-        )
-        .setTimestamp()
-        .setAuthor({
-          name: `${interaction.client.user.username}`,
-          iconURL: `${interaction.client.user.displayAvatarURL()}`,
-        })
-        .setColor("White");
-      const action = new ActionRowBuilder().addComponents(
-        new ButtonBuilder()
-          .setStyle(ButtonStyle.Success)
-          .setLabel("Accept")
-          .setCustomId("accept"),
-        new ButtonBuilder()
-          .setStyle(ButtonStyle.Danger)
-          .setLabel("Deny")
-          .setCustomId("deny")
-      );
-      let k = await adminChannel.send({
-        embeds: [toAdmin],
-        components: [action],
-      });
-      await execute(
-        `INSERT INTO messages (message_id, member_id, amount) VALUES (?, ?, ?)`,
-        [k.id, interaction.member.id, Number(duration)]
-      );
-      await interaction.reply({
-        ephemeral: true,
-        content: `> :white_check_mark: You have successfully requested your leave. Please wait up to 1-2 days for the admins to process your request. Whether your leave has been accepted or denied will be communicated over through your DM.\n> **Make sure that your DM is open so that we can send you a message**.`,
-      });
+
+      await updateUserAndNotify(null, guildMember);
     }
+
+    voiceJoinTimestamps.delete(memberId);
   }
-  if (interaction.isButton()) {
-    if (interaction.customId === "deny") {
-      let messageData = await execute(
-        `SELECT * FROM messages WHERE message_id = ?`,
-        [interaction.message.id]
-      );
-      let userData = await execute(`SELECT * FROM status WHERE member_id = ?`, [
-        messageData[0].member_id,
-      ]);
-      const toUser = await interaction.guild.members.fetch(
-        userData[0].member_id
-      );
-      const actionrows = new ActionRowBuilder().addComponents(
-        new ButtonBuilder()
-          .setStyle(ButtonStyle.Primary)
-          .setLabel("Accept")
-          .setDisabled(true)
-          .setCustomId("accept"),
-        new ButtonBuilder()
-          .setStyle(ButtonStyle.Danger)
-          .setLabel("Deny")
-          .setDisabled(true)
-          .setCustomId("deny")
-      );
-      let newEmbed = EmbedBuilder.from(interaction.message.embeds[0])
-        .setColor("DarkRed")
-        .setTitle(`❌ | Leave Request Denied`)
-        .setDescription(
-          `> **This request has been denied by ${
-            interaction.member
-          } at ${getCurrentDateTime()}**\n` +
-            interaction.message.embeds[0].data.description
-        );
-      interaction.message.edit({
-        embeds: [newEmbed],
-        components: [actionrows],
-      });
-      await execute(`DELETE FROM messages WHERE message_id = ?`, [
-        interaction.message.id,
-      ]);
-      try {
-        let toUserEmbed = EmbedBuilder.from(interaction.message.embeds[0])
-          .setColor("DarkRed")
-          .setTitle(`❌ | Leave Request Denied`)
-          .setDescription(
-            `> Dear ${toUser}, you recently requested a leave. The request has been processed. Please view the verdict below:\n\n> **This request has been denied by ${
-              interaction.member
-            } at ${getCurrentDateTime()}**\n> Would you like to appeal? That is possible. Please contact ${
-              interaction.member
-            } for their reasoning and for more negotiation.`
-          );
-        await toUser.send({ embeds: [toUserEmbed] });
-      } catch (e) {}
-      await interaction.reply({
-        ephemeral: true,
-        content: `> :white_check_mark: You have successfully denied this request.`,
-      });
-    }
-    if (interaction.customId === "accept") {
-      let messageData = await execute(
-        `SELECT * FROM messages WHERE message_id = ?`,
-        [interaction.message.id]
-      );
-      let userData = await execute(`SELECT * FROM status WHERE member_id = ?`, [
-        messageData[0].member_id,
-      ]);
-      const toUser = await interaction.guild.members.fetch(
-        userData[0].member_id
-      );
-      const actionrows = new ActionRowBuilder().addComponents(
-        new ButtonBuilder()
-          .setStyle(ButtonStyle.Primary)
-          .setLabel("Accept")
-          .setDisabled(true)
-          .setCustomId("accept"),
-        new ButtonBuilder()
-          .setStyle(ButtonStyle.Danger)
-          .setLabel("Deny")
-          .setDisabled(true)
-          .setCustomId("deny")
-      );
-      let newEmbed = EmbedBuilder.from(interaction.message.embeds[0])
-        .setColor("DarkRed")
-        .setTitle(`✅ | Leave Request Accepted`)
-        .setDescription(
-          `> **This request has been accepted by ${
-            interaction.member
-          } at ${getCurrentDateTime()}**\n` +
-            interaction.message.embeds[0].data.description
-        );
-      interaction.message.edit({
-        embeds: [newEmbed],
-        components: [actionrows],
-      });
-      await execute(
-        `UPDATE status SET status = ?, timestamp = ?, amount = ? WHERE member_id = ?`,
-        [
-          userData[0].approved,
-          getCurrentTimestamp(),
-          messageData[0].amount,
-          toUser.id,
-        ]
-      );
-      await execute(`DELETE FROM messages WHERE message_id = ?`, [
-        interaction.message.id,
-      ]);
-      try {
-        let toUserEmbed = EmbedBuilder.from(interaction.message.embeds[0])
-          .setColor("DarkGreen")
-          .setTitle(`✅ | Leave Request Accepted`)
-          .setDescription(
-            `> Dear ${toUser}, you recently requested a leave. The request has been processed. Please view the verdict below:\n\n> **This request has been accepted by ${
-              interaction.member
-            } at ${getCurrentDateTime()}**\n> Your status has automatically been changed to ${
-              userData[0].approved
-            }.`
-          );
-        await toUser.send({ embeds: [toUserEmbed] });
-      } catch (e) {}
-      await interaction.reply({
-        ephemeral: true,
-        content: `> :white_check_mark: You have successfully accepted this request.`,
-      });
-    }
+});
+
+client.on(Events.MessageCreate, async (message) => {
+  let blacklist = await execute(
+    `SELECT * FROM blacklist WHERE channel_id = ?`,
+    [message.channel.id]
+  );
+  if (blacklist.length > 0) return;
+  if (message.member.user.bot) return;
+
+  let userData = await execute(`SELECT * FROM users WHERE member_id = ?`, [
+    message.member.id,
+  ]);
+  if (userData.length === 0) {
+    await execute(
+      `INSERT INTO users (member_id, xp, current_level, voice, messages) VALUES (?, ?, ?, ?, ?)`,
+      [message.member.id, 0, 0, 0, 0]
+    );
   }
+
+  const lastTalked = talkedMap.get(message.member.id);
+  if (!lastTalked || Date.now() - lastTalked > 60000) {
+    let baseXpToGive = 15;
+
+    const guildMember = message.member;
+    const multiplier = await getUserIncrementMultiplier(guildMember);
+    const finalXpToGive = baseXpToGive * multiplier;
+
+    await execute(
+      `UPDATE users SET xp = xp + ?, messages = messages + 1 WHERE member_id = ?`,
+      [finalXpToGive, guildMember.id]
+    );
+
+    talkedMap.set(guildMember.id, Date.now());
+  }
+
+  await updateUserAndNotify(message, null);
 });
 
 client.login(process.env.BOT_TOKEN);

@@ -57,21 +57,21 @@ function run(query, params = []) {
 
 async function Initialization() {
   try {
-    await run(`create table if not exists roster (
-      member_id TEXT PRIMARY KEY
+    await run(`CREATE TABLE IF NOT EXISTS increments (
+      role_id TEXT PRIMARY KEY, 
+      increment INTEGER
       );`);
-    console.log("created table roster");
-    await run(`create table if not exists status (
-      member_id TEXT PRIMARY KEY,
-      status TEXT,
-      timestamp TEXT, 
-      approved TEXT,
-      amount TEXT,
-      FOREIGN KEY (member_id) REFERENCES roster(member_id) ON DELETE CASCADE);`);
-    await run(`create table if not exists messages (
-        message_id TEXT PRIMARY KEY,
-        member_id TEXT, amount TEXT);`);
-    console.log("created table status");
+    await run(`create table if not exists users (
+      member_id TEXT PRIMARY KEY, 
+      xp INTEGER, 
+      current_level INTEGER,
+      voice INTEGER,
+      messages INTEGER
+      );`);
+    await run(`create table if not exists blacklist (
+        channel_id TEXT PRIMARY KEY
+        );`);
+    console.log("created table users");
   } catch (err) {
     console.error("Initialization error:", err);
   }
