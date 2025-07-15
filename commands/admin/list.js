@@ -14,12 +14,16 @@ module.exports = {
     const noAdmin = new EmbedBuilder()
       .setTitle(":x: | Invalid Permissions")
       .setDescription(
-        `> ⚠️ To use this command, you must be a valid admin of the server.`
+        `> ⚠️ Dear ${interaction.member}, to use this command, You must be a valid admin of the server.`
       )
+      .setFooter({ text: `⚡️ Dank Bot` })
       .setTimestamp()
+      .setThumbnail(
+        "https://cdn.creazilla.com/cliparts/5626337/red-x-clipart-lg.png"
+      )
       .setAuthor({
-        name: interaction.client.user.username,
-        iconURL: interaction.client.user.displayAvatarURL(),
+        name: `${interaction.client.user.username}`,
+        iconURL: `${interaction.client.user.displayAvatarURL()}`,
       })
       .setColor("DarkRed");
 
@@ -59,14 +63,15 @@ module.exports = {
       .setTitle("📃 | Blacklisted Channels")
       .setThumbnail(interaction.guild.iconURL({ dynamic: true }))
       .setDescription(
-        `${channelString}\n\n### Commands\n> - \`/blacklist\`: blacklist a channel from XP gaining.\n> - \`/rmblacklist\`: remove a channel from the blacklist.`
+        `${channelString}\n### Commands\n> - \`/blacklist\`: blacklist a channel from XP gaining.\n> - \`/rmblacklist\`: remove a channel from the blacklist.`
       )
-      .setTimestamp()
+      .setColor("#00b7ff")
       .setAuthor({
-        name: interaction.client.user.username,
-        iconURL: interaction.client.user.displayAvatarURL(),
+        name: `${interaction.client.user.username}`,
+        iconURL: `${interaction.client.user.displayAvatarURL()}`,
       })
-      .setColor("White");
+      .setFooter({ text: `⚡️ Dank Bot` })
+      .setTimestamp();
 
     await interaction.reply({
       ephemeral: true,

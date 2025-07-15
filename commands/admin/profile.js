@@ -173,6 +173,6 @@ module.exports = {
     const attachment = new AttachmentBuilder(canvas.toBuffer(), {
       name: "profile.png",
     });
-    await interaction.reply({ files: [attachment] });
+    await interaction.reply({ files: [attachment], ephemeral: true });
   },
 };

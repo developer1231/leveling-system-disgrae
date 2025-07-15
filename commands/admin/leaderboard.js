@@ -150,6 +150,6 @@ module.exports = {
       name: "leaderboard.png",
     });
 
-    await interaction.reply({ files: [attachment] });
+    await interaction.reply({ files: [attachment], ephemeral: true });
   },
 };

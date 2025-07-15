@@ -41,7 +41,7 @@ module.exports = {
       .setTitle(`📊 Stats for ${interaction.user.username}`)
       .setThumbnail(interaction.user.displayAvatarURL())
       .setDescription(
-        `> - You can use **/rank** to view your current rank.\n> - **/leaderboard** displays the current leaderboard.`
+        `> - You can use **/profile** to view your current profile.\n> - **/leaderboard** displays the current leaderboard.`
       )
       .setAuthor({
         name: interaction.user.username,
@@ -59,11 +59,17 @@ module.exports = {
           inline: true,
         }
       )
-      .setColor("White")
+      .setColor("#00b7ff")
+      .setAuthor({
+        name: `${interaction.client.user.username}`,
+        iconURL: `${interaction.client.user.displayAvatarURL()}`,
+      })
+      .setFooter({ text: `⚡️ Dank Bot` })
       .setTimestamp();
 
     await interaction.reply({
       embeds: [embed],
+      ephemeral: true,
     });
   },
 };

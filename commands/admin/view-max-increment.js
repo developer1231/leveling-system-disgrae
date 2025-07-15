@@ -15,9 +15,13 @@ module.exports = {
     const noAdmin = new EmbedBuilder()
       .setTitle(":x: | Invalid Permissions")
       .setDescription(
-        `> ⚠️ To use this command, You must be a valid admin of the server.`
+        `> ⚠️ Dear ${interaction.member}, to use this command, You must be a valid admin of the server.`
       )
+      .setFooter({ text: `⚡️ Dank Bot` })
       .setTimestamp()
+      .setThumbnail(
+        "https://cdn.creazilla.com/cliparts/5626337/red-x-clipart-lg.png"
+      )
       .setAuthor({
         name: `${interaction.client.user.username}`,
         iconURL: `${interaction.client.user.displayAvatarURL()}`,
@@ -31,9 +35,16 @@ module.exports = {
     const config = JSON.parse(fs.readFileSync("./settings.json", "utf8"));
 
     const embed = new EmbedBuilder()
-      .setTitle("⚙️ Current Max Increment")
-      .setDescription(`> **Max Increment:** \`${config.max_increment}\``)
-      .setColor("Blue")
+      .setTitle("⚙️ | Current Max Increment")
+      .setDescription(
+        `> **Max Increment:** \`\`${config.max_increment}\`\`\n### Suggestions\n> - \`\`/set-max-increment\`\`: to set the maximum increment.\n> - \`\`/add-increment\`\`: to set add a role increment.\n> - \`\`/remove-increment\`\`: to remove a role increment.\n> - \`\`/list-increments\`\`: to list all role increments.`
+      )
+      .setColor("#00b7ff")
+      .setAuthor({
+        name: `${interaction.client.user.username}`,
+        iconURL: `${interaction.client.user.displayAvatarURL()}`,
+      })
+      .setFooter({ text: `⚡️ Dank Bot` })
       .setTimestamp();
 
     await interaction.reply({ embeds: [embed], ephemeral: true });

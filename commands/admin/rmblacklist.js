@@ -36,9 +36,13 @@ module.exports = {
     const noAdmin = new EmbedBuilder()
       .setTitle(":x: | Invalid Permissions")
       .setDescription(
-        `> ⚠️ To use this command, You must be a valid admin of the server.`
+        `> ⚠️ Dear ${interaction.member}, to use this command, You must be a valid admin of the server.`
       )
+      .setFooter({ text: `⚡️ Dank Bot` })
       .setTimestamp()
+      .setThumbnail(
+        "https://cdn.creazilla.com/cliparts/5626337/red-x-clipart-lg.png"
+      )
       .setAuthor({
         name: `${interaction.client.user.username}`,
         iconURL: `${interaction.client.user.displayAvatarURL()}`,
@@ -55,24 +59,26 @@ module.exports = {
           Date.now() / 1000
         )}:R>`
       )
-      .setTimestamp()
+      .setColor("#00b7ff")
       .setAuthor({
         name: `${interaction.client.user.username}`,
         iconURL: `${interaction.client.user.displayAvatarURL()}`,
       })
-      .setColor("White");
+      .setFooter({ text: `⚡️ Dank Bot` })
+      .setTimestamp();
 
     const blacklistedAlready = new EmbedBuilder()
       .setTitle(":x: | Channel blacklist not found")
       .setDescription(
-        `> Dear ${interaction.member}, the channel you have chosen to remove from the blacklist, ${channel}, has not been blacklisted before.\n\n### Suggestions\n> - Use \`\`/list\`\` to view the blacklist\n> - \`\`Use /blacklist\`\` to add a blacklist.`
+        `> Dear ${interaction.member}, the channel you have chosen to remove from the blacklist, ${channel}, has not been blacklisted before.\n### Suggestions\n> - Use \`\`/list\`\` to view the blacklist\n> - \`\`Use /blacklist\`\` to add a blacklist.`
       )
-      .setTimestamp()
+      .setColor("#00b7ff")
       .setAuthor({
         name: `${interaction.client.user.username}`,
         iconURL: `${interaction.client.user.displayAvatarURL()}`,
       })
-      .setColor("DarkRed");
+      .setFooter({ text: `⚡️ Dank Bot` })
+      .setTimestamp();
 
     const toUser = new EmbedBuilder()
       .setTitle("⚠️ | Blacklist Updated - Blacklist Removed")
@@ -82,12 +88,13 @@ module.exports = {
           Date.now() / 1000
         )}:R>\n\n> *To view the admin log, please click on the button below.*`
       )
-      .setTimestamp()
+       .setColor("#00b7ff")
       .setAuthor({
         name: `${interaction.client.user.username}`,
         iconURL: `${interaction.client.user.displayAvatarURL()}`,
       })
-      .setColor("White");
+      .setFooter({ text: `⚡️ Dank Bot` })
+      .setTimestamp();
     /**
      * ====================
      * 🚀 Defining Embeds Block END

@@ -2,6 +2,9 @@ const {
   SlashCommandBuilder,
   EmbedBuilder,
   PermissionFlagsBits,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
 } = require("discord.js");
 const fs = require("fs");
 
@@ -21,9 +24,13 @@ module.exports = {
     const noAdmin = new EmbedBuilder()
       .setTitle(":x: | Invalid Permissions")
       .setDescription(
-        `> ⚠️ To use this command, You must be a valid admin of the server.`
+        `> ⚠️ Dear ${interaction.member}, to use this command, You must be a valid admin of the server.`
       )
+      .setFooter({ text: `⚡️ Dank Bot` })
       .setTimestamp()
+      .setThumbnail(
+        "https://cdn.creazilla.com/cliparts/5626337/red-x-clipart-lg.png"
+      )
       .setAuthor({
         name: `${interaction.client.user.username}`,
         iconURL: `${interaction.client.user.displayAvatarURL()}`,
@@ -42,11 +49,49 @@ module.exports = {
     fs.writeFileSync("./settings.json", JSON.stringify(config, null, 2));
 
     const embed = new EmbedBuilder()
-      .setTitle("✅ Max Increment Updated")
-      .setDescription(`> **New Max Increment:** \`${newValue}\``)
-      .setColor("Green")
+      .setTitle("✅ | Max Increment Updated")
+      .setDescription(
+        `> **New Max Increment:** \`\`${newValue}\`\`.\n### Suggestions\n> - \`\`/set-max-increment\`\`: to set the maximum increment.\n> - \`\`/add-increment\`\`: to set add a role increment.\n> - \`\`/remove-increment\`\`: to remove a role increment.\n> - \`\`/list-increments\`\`: to list all role increments.`
+      )
+      .setColor("#00b7ff")
+      .setAuthor({
+        name: `${interaction.client.user.username}`,
+        iconURL: `${interaction.client.user.displayAvatarURL()}`,
+      })
+      .setFooter({ text: `⚡️ Dank Bot` })
       .setTimestamp();
+    const toAdmin = new EmbedBuilder()
+      .setTitle("⚠️ | Increment Settings Updated - Max Increment Set")
+      .setColor("#00b7ff")
+      .setAuthor({
+        name: `${interaction.client.user.username}`,
+        iconURL: `${interaction.client.user.displayAvatarURL()}`,
+      })
+      .setFooter({ text: `⚡️ Dank Bot` })
+      .setTimestamp()
+      .setDescription(
+        `> Dear admins, the increment settings have been updated. Please view the details down below:\n\n> **Admin:** ${
+          interaction.member
+        }\n> **Increment Type:** ⚙️ Settings Change\n> **Set Max Increment:** ${newValue}\n> **Update Occured At:** <t:${Math.round(
+          Date.now() / 1000
+        )}:R>`
+      );
+    const adminChannel = await interaction.guild.channels.fetch(
+      process.env.ADMIN_CHANNEL
+    );
 
-    await interaction.reply({ embeds: [embed], ephemeral: true });
+    let message = await adminChannel.send({ embeds: [toAdmin] });
+    const ActionRow = new ActionRowBuilder().addComponents(
+      new ButtonBuilder()
+        .setStyle(ButtonStyle.Link)
+        .setURL(message.url)
+        .setLabel("View Admin Log")
+        .setEmoji("🚀")
+    );
+    await interaction.reply({
+      embeds: [embed],
+      ephemeral: true,
+      components: [ActionRow],
+    });
   },
 };

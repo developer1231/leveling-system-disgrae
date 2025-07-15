@@ -111,9 +111,10 @@ async function updateUserAndNotify(message, member) {
 
   const xp = newUserData[0].xp;
   const userLevel = newUserData[0].current_level;
+  console.log(userLevel);
   const newLevel = getLevelFromXP(xp);
-
-  if (userLevel !== newLevel && config.levelup) {
+  console.log(newLevel);
+  if (userLevel !== newLevel) {
     // Update level in DB
     await execute(`UPDATE users SET current_level = ? WHERE member_id = ?`, [
       newLevel,
@@ -143,19 +144,32 @@ async function updateUserAndNotify(message, member) {
     if (!guildMember.roles.cache.has(role.id)) {
       await guildMember.roles.add(role);
     }
+    if (config.level_up) {
+      // Send level-up message
+      const channel = await (message
+        ? message.guild.channels.fetch(config.channel_id)
+        : member.guild.channels.fetch(config.channel_id));
 
-    // Send level-up message
-    const channel = await (message
-      ? message.guild.channels.fetch(config.channel_id)
-      : member.guild.channels.fetch(config.channel_id));
-
-    if (channel && channel.isTextBased()) {
-      channel.send(
-        `🎉 Congrats ${guildMember}! You leveled up to **Level ${newLevel}** and got the **${roleName}** role!`
-      );
+      if (channel && channel.isTextBased()) {
+        const embed = new EmbedBuilder()
+          .setColor(0x00ff99) // You can change color if you like
+          .setTitle("🎉 | Level Up!")
+          .setDescription(
+            `${guildMember} leveled up to **Level ${newLevel}** and received the **${role}** role!`
+          )
+          .setAuthor({
+            name: guildMember.user.username,
+            iconURL: guildMember.user.displayAvatarURL({ dynamic: true }),
+          })
+          .setThumbnail(guildMember.user.displayAvatarURL({ dynamic: true }))
+          .setTimestamp()
+          .setFooter({ text: `Keep going! 💪` });
+        channel.send({ embeds: [embed] });
+      }
     }
   }
 }
+
 client.on(Events.InteractionCreate, async (interaction) => {
   let command = client.commands.get(interaction.commandName);
   if (interaction.isCommand()) {

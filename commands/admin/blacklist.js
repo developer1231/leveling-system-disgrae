@@ -37,9 +37,13 @@ module.exports = {
     const noAdmin = new EmbedBuilder()
       .setTitle(":x: | Invalid Permissions")
       .setDescription(
-        `> ⚠️ To use this command, You must be a valid admin of the server.`
+        `> ⚠️ Dear ${interaction.member}, to use this command, You must be a valid admin of the server.`
       )
+      .setFooter({ text: `⚡️ Dank Bot` })
       .setTimestamp()
+      .setThumbnail(
+        "https://cdn.creazilla.com/cliparts/5626337/red-x-clipart-lg.png"
+      )
       .setAuthor({
         name: `${interaction.client.user.username}`,
         iconURL: `${interaction.client.user.displayAvatarURL()}`,
@@ -48,32 +52,33 @@ module.exports = {
 
     const toAdmin = new EmbedBuilder()
       .setTitle("⚠️ | Blacklist Updated - Blacklist added")
-      .setThumbnail(interaction.member.user.displayAvatarURL())
+      .setColor("#00b7ff")
+      .setAuthor({
+        name: `${interaction.client.user.username}`,
+        iconURL: `${interaction.client.user.displayAvatarURL()}`,
+      })
+      .setFooter({ text: `⚡️ Dank Bot` })
+      .setTimestamp()
       .setDescription(
         `> Dear admins, the channel blacklist has been updated. Please view the details down below:\n\n> **Admin:** ${
           interaction.member
         }\n> **Blacklist Type:** ✅ Added\n> **Added Channel:** ${channel}\n> **Update Occured At:** <t:${Math.round(
           Date.now() / 1000
         )}:R>`
-      )
-      .setTimestamp()
-      .setAuthor({
-        name: `${interaction.client.user.username}`,
-        iconURL: `${interaction.client.user.displayAvatarURL()}`,
-      })
-      .setColor("White");
+      );
 
     const blacklistedAlready = new EmbedBuilder()
       .setTitle(":x: | Channel already blacklisted")
       .setDescription(
-        `> Dear ${interaction.member}, the channel you have chosen to blacklist, ${channel}, has already been blacklisted before.\n\n### Suggestions\n> - Use \`\`/list\`\` to view the blacklist\n> - \`\`Use /rmblacklist\`\` to remove a blacklist.`
+        `> Dear ${interaction.member}, the channel you have chosen to blacklist, ${channel}, has already been blacklisted before.\n### Suggestions\n> - Use \`\`/list\`\` to view the blacklist\n> - \`\`Use /rmblacklist\`\` to remove a blacklist.`
       )
-      .setTimestamp()
+      .setColor("#00b7ff")
       .setAuthor({
         name: `${interaction.client.user.username}`,
         iconURL: `${interaction.client.user.displayAvatarURL()}`,
       })
-      .setColor("DarkRed");
+      .setFooter({ text: `⚡️ Dank Bot` })
+      .setTimestamp();
 
     const toUser = new EmbedBuilder()
       .setTitle("⚠️ | Blacklist Updated - Blacklist added")
@@ -83,12 +88,13 @@ module.exports = {
           Date.now() / 1000
         )}:R>\n\n> *To view the admin log, please click on the button below.*`
       )
-      .setTimestamp()
+      .setColor("#00b7ff")
       .setAuthor({
         name: `${interaction.client.user.username}`,
         iconURL: `${interaction.client.user.displayAvatarURL()}`,
       })
-      .setColor("White");
+      .setFooter({ text: `⚡️ Dank Bot` })
+      .setTimestamp();
     /**
      * ====================
      * 🚀 Defining Embeds Block END
