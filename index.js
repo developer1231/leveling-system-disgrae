@@ -115,44 +115,38 @@ async function updateUserAndNotify(message, member) {
   const newLevel = getLevelFromXP(xp);
   console.log(newLevel);
   if (userLevel !== newLevel) {
-    // Update level in DB
     await execute(`UPDATE users SET current_level = ? WHERE member_id = ?`, [
       newLevel,
       message ? message.member.id : member.id,
     ]);
 
-    // Fetch member object
     const guildMember = message
       ? message.member
       : await member.guild.members.fetch(member.id);
 
-    // Build role name (e.g., "Level 5")
     const roleName = `Level ${newLevel}`;
 
-    // Find or create role
     let role = guildMember.guild.roles.cache.find((r) => r.name === roleName);
 
     if (!role) {
       role = await guildMember.guild.roles.create({
         name: roleName,
-        color: "Random", // You can choose a fixed color if you like
+        color: "Random",
         reason: `Auto-created for level ${newLevel}`,
       });
     }
 
-    // Give role to user
     if (!guildMember.roles.cache.has(role.id)) {
       await guildMember.roles.add(role);
     }
     if (config.level_up) {
-      // Send level-up message
       const channel = await (message
         ? message.guild.channels.fetch(config.channel_id)
         : member.guild.channels.fetch(config.channel_id));
 
       if (channel && channel.isTextBased()) {
         const embed = new EmbedBuilder()
-          .setColor(0x00ff99) // You can change color if you like
+          .setColor(0x00ff99)
           .setTitle("🎉 | Level Up!")
           .setDescription(
             `${guildMember} leveled up to **Level ${newLevel}** and received the **${role}** role!`

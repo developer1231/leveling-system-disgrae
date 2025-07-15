@@ -10,7 +10,7 @@ module.exports = {
   async execute(interaction) {
     const userId = interaction.user.id;
 
-    // Fetch user data
+
     const userData = await execute(`SELECT * FROM users WHERE member_id = ?`, [
       userId,
     ]);
@@ -24,14 +24,14 @@ module.exports = {
 
     const user = userData[0];
 
-    // Calculate next level XP requirement (example formula: level * 1000)
+   
     const xpNeededForNextLevel = getXpFromLevel(user.current_level + 1);
     const xpNeededForCurrentLevel = getXpFromLevel(user.current_level);
 
     const xpToNextLevel = xpNeededForNextLevel - user.xp;
     const xpCurrentGained = user.xp - xpNeededForCurrentLevel;
 
-    // Convert voice minutes to h, m, s
+   
     const totalSeconds = user.voice * 60;
     const hours = Math.floor(totalSeconds / 3600);
     const minutes = Math.floor((totalSeconds % 3600) / 60);

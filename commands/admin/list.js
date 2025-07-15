@@ -33,7 +33,6 @@ module.exports = {
       return interaction.reply({ ephemeral: true, embeds: [noAdmin] });
     }
 
-    // Get all blacklisted channels for this guild
     const blacklistData = await execute(`SELECT * FROM blacklist`, []);
 
     let channelString = "";

@@ -10,7 +10,7 @@ module.exports = {
   async execute(interaction) {
     const member = interaction.member;
 
-    // Fetch DB user data
+  
     const userData = await execute(`SELECT * FROM users WHERE member_id = ?`, [
       member.id,
     ]);
@@ -22,20 +22,20 @@ module.exports = {
     const xpNeededForCurrentLevel = getXpFromLevel(level);
     const xpCurrentGained = xp - xpNeededForCurrentLevel;
 
-    // === Your rank logic ===
+
     const sortedData = allData.sort((a, b) => b.xp - a.xp);
     const rankIndex = sortedData.findIndex((u) => u.member_id === member.id);
     const rank = rankIndex >= 0 ? rankIndex + 1 : allData.length;
 
-    // Canvas setup
+
     const canvas = createCanvas(900, 300);
     const ctx = canvas.getContext("2d");
 
-    // Background
+
     ctx.fillStyle = "black";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Card container with rounded corners
+  
     const cardX = 20;
     const cardY = 20;
     const cardWidth = 860;
@@ -61,7 +61,7 @@ module.exports = {
       ctx.closePath();
     }
 
-    // Shadow for card
+    
     ctx.shadowColor = "rgba(0,0,0,0.7)";
     ctx.shadowBlur = 20;
     ctx.shadowOffsetX = 0;
@@ -73,7 +73,7 @@ module.exports = {
 
     ctx.shadowColor = "transparent";
 
-    // Avatar
+   
     const avatarX = 150;
     const avatarY = 150;
     const avatarRadius = 100;
@@ -108,8 +108,8 @@ module.exports = {
     );
     ctx.restore();
 
-    // === Use a nice modern font ===
-    ctx.font = "bold 36px Sans-serif"; // fallback if custom font not loaded
+   
+    ctx.font = "bold 36px Sans-serif"; 
     ctx.fillStyle = "#ffffff";
     ctx.shadowColor = "rgba(0, 0, 0, 0.7)";
     ctx.shadowBlur = 4;
@@ -120,7 +120,7 @@ module.exports = {
     ctx.fillStyle = "#00bfff";
     ctx.fillText(`Level ${level}`, 280, 160);
 
-    // XP bar
+
     const barWidth = 500;
     const barHeight = 30;
     const barX = 280;
@@ -152,24 +152,24 @@ module.exports = {
       ctx.fill();
     }
 
-    // Current progress text below bar
+
     ctx.font = "26px Sans-serif";
     ctx.fillStyle = "#b9bbbe";
     ctx.fillText(`${xpCurrentGained} / ${xpNeededForNextLevel} XP`, 280, 240);
 
-    // === Rank text without badge, just color ===
-    let rankColor = "#b9bbbe"; // default gray
-    if (rank === 1) rankColor = "#ffd700"; // gold
-    else if (rank === 2) rankColor = "#c0c0c0"; // silver
-    else if (rank === 3) rankColor = "#cd7f32"; // bronze
+   
+    let rankColor = "#b9bbbe";
+    if (rank === 1) rankColor = "#ffd700"; 
+    else if (rank === 2) rankColor = "#c0c0c0"; 
+    else if (rank === 3) rankColor = "#cd7f32"; 
 
     ctx.font = "bold 32px Sans-serif";
     ctx.fillStyle = rankColor;
     ctx.textAlign = "right";
     ctx.fillText(`#${rank}`, cardX + cardWidth - 20, cardY + 50);
-    ctx.textAlign = "start"; // reset
+    ctx.textAlign = "start"; 
 
-    // Send image
+   
     const attachment = new AttachmentBuilder(canvas.toBuffer(), {
       name: "profile.png",
     });

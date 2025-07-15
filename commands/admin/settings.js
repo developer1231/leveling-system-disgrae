@@ -74,10 +74,10 @@ module.exports = {
       config.channel_id = toSetChannel.id;
     }
 
-    // Save updated config
+    
     fs.writeFileSync("./settings.json", JSON.stringify(config, null, 2));
 
-    // Update display strings after changes
+   
     let enabledLevelUpMessages = config.level_up ? "Enabled ✅" : "Disabled ❌";
     let channel = await interaction.guild.channels.fetch(config.channel_id);
 
