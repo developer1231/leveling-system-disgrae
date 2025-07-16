@@ -5,7 +5,6 @@ module.exports = {
   once: true,
   async execute(client) {
     Initialization();
-
     console.log("[✅] Bot is ready to be used on discord.");
   },
 };

@@ -64,7 +64,7 @@ module.exports = {
         name: `${interaction.client.user.username}`,
         iconURL: `${interaction.client.user.displayAvatarURL()}`,
       })
-      .setFooter({ text: `⚡️ Dank Bot` })
+       .setFooter({ text: `🍃 HighBot` })
       .setTimestamp();
 
     await interaction.reply({

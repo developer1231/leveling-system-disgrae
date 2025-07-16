@@ -43,7 +43,7 @@ module.exports = {
         .setDescription(
           `> ⚠️ Dear ${interaction.member}, to use this command, You must be a valid admin of the server.`
         )
-        .setFooter({ text: `⚡️ Dank Bot` })
+        .setFooter({ text: `🍃 HighBot` })
         .setTimestamp()
         .setThumbnail(
           "https://cdn.creazilla.com/cliparts/5626337/red-x-clipart-lg.png"
@@ -74,10 +74,8 @@ module.exports = {
       config.channel_id = toSetChannel.id;
     }
 
-    
     fs.writeFileSync("./settings.json", JSON.stringify(config, null, 2));
 
-   
     let enabledLevelUpMessages = config.level_up ? "Enabled ✅" : "Disabled ❌";
     let channel = await interaction.guild.channels.fetch(config.channel_id);
 
@@ -93,7 +91,7 @@ module.exports = {
         name: `${interaction.client.user.username}`,
         iconURL: `${interaction.client.user.displayAvatarURL()}`,
       })
-      .setFooter({ text: `⚡️ Dank Bot` })
+      .setFooter({ text: `🍃 HighBot` })
       .setTimestamp();
     const toAdmin = new EmbedBuilder()
       .setTitle("⚠️ | Leveling Settings Updated")
@@ -102,7 +100,7 @@ module.exports = {
         name: `${interaction.client.user.username}`,
         iconURL: `${interaction.client.user.displayAvatarURL()}`,
       })
-      .setFooter({ text: `⚡️ Dank Bot` })
+      .setFooter({ text: `🍃 HighBot` })
       .setTimestamp()
       .setDescription(
         `> Dear admins, the leveling settings have been updated. Please view the details down below:\n\n> **Admin:** ${

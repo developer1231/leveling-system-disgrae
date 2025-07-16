@@ -26,7 +26,7 @@ module.exports = {
       .setDescription(
         `> ⚠️ Dear ${interaction.member}, to use this command, You must be a valid admin of the server.`
       )
-      .setFooter({ text: `⚡️ Dank Bot` })
+      .setFooter({ text: `🍃 HighBot` })
       .setTimestamp()
       .setThumbnail(
         "https://cdn.creazilla.com/cliparts/5626337/red-x-clipart-lg.png"
@@ -58,7 +58,7 @@ module.exports = {
         name: `${interaction.client.user.username}`,
         iconURL: `${interaction.client.user.displayAvatarURL()}`,
       })
-      .setFooter({ text: `⚡️ Dank Bot` })
+      .setFooter({ text: `🍃 HighBot` })
       .setTimestamp();
     const toAdmin = new EmbedBuilder()
       .setTitle("⚠️ | Increment Settings Updated - Max Increment Set")
@@ -67,7 +67,7 @@ module.exports = {
         name: `${interaction.client.user.username}`,
         iconURL: `${interaction.client.user.displayAvatarURL()}`,
       })
-      .setFooter({ text: `⚡️ Dank Bot` })
+      .setFooter({ text: `🍃 HighBot` })
       .setTimestamp()
       .setDescription(
         `> Dear admins, the increment settings have been updated. Please view the details down below:\n\n> **Admin:** ${

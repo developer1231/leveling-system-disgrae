@@ -157,7 +157,7 @@ async function updateUserAndNotify(message, member) {
           })
           .setThumbnail(guildMember.user.displayAvatarURL({ dynamic: true }))
           .setTimestamp()
-          .setFooter({ text: `Keep going! 💪` });
+          .setFooter({ text: `🍃 HighBot | Keep going! 💪` });
         channel.send({ embeds: [embed] });
       }
     }
