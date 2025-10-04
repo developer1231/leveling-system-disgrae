@@ -1,0 +1,19 @@
+{
+  "highbotLogging": true,
+  "vcLogs": true,
+  "messageEdits": true,
+  "messageDeletes": true,
+  "channelCreate": true,
+  "channelEdit": true,
+  "channelDelete": true,
+  "roleCreate": true,
+  "roleEdit": true,
+  "roleDelete": true,
+  "roleUpdate": true,
+  "memberKick": true,
+  "memberBan": true,
+  "memberUnban": true,
+  "memberTimeout": true,
+  "guildMemberAdd": true,
+  "guildMemberRemove": true
+}

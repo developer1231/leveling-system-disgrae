@@ -6,6 +6,7 @@ const {
   ButtonBuilder,
   ButtonStyle,
 } = require("discord.js");
+const fs = require("fs");
 const { execute } = require("../../database/database");
 
 module.exports = {
@@ -66,7 +67,7 @@ module.exports = {
         name: `${interaction.client.user.username}`,
         iconURL: `${interaction.client.user.displayAvatarURL()}`,
       })
-       .setFooter({ text: `🍃 HighBot` })
+      .setFooter({ text: `🍃 HighBot` })
       .setTimestamp();
     const toAdmin = new EmbedBuilder()
       .setTitle("⚠️ | Increment List Updated - Increment added")
@@ -75,7 +76,7 @@ module.exports = {
         name: `${interaction.client.user.username}`,
         iconURL: `${interaction.client.user.displayAvatarURL()}`,
       })
-       .setFooter({ text: `🍃 HighBot` })
+      .setFooter({ text: `🍃 HighBot` })
       .setTimestamp()
       .setDescription(
         `> Dear admins, the increment list has been updated. Please view the details down below:\n\n> **Admin:** ${
@@ -84,22 +85,39 @@ module.exports = {
           Date.now() / 1000
         )}:R>`
       );
-    const adminChannel = await interaction.guild.channels.fetch(
-      process.env.ADMIN_CHANNEL
-    );
+    const path = require("path");
+    const logsPath = path.join(__dirname, "../../logs.json");
+    function loadLogs() {
+      if (!fs.existsSync(logsPath)) return {};
+      return JSON.parse(fs.readFileSync(logsPath, "utf8"));
+    }
+    let message;
+    const logs = loadLogs();
+    if (logs["highbotLogging"]) {
+      const adminChannel = await interaction.guild.channels.fetch(
+        process.env.ADMIN_CHANNEL
+      );
 
-    let message = await adminChannel.send({ embeds: [toAdmin] });
-    const ActionRow = new ActionRowBuilder().addComponents(
-      new ButtonBuilder()
-        .setStyle(ButtonStyle.Link)
-        .setURL(message.url)
-        .setLabel("View Admin Log")
-        .setEmoji("🚀")
-    );
-    await interaction.reply({
-      embeds: [embed],
-      ephemeral: true,
-      components: [ActionRow],
-    });
+      message = await adminChannel.send({ embeds: [toAdmin] });
+    }
+    if (message) {
+      const ActionRow = new ActionRowBuilder().addComponents(
+        new ButtonBuilder()
+          .setStyle(ButtonStyle.Link)
+          .setURL(message.url)
+          .setLabel("View Admin Log")
+          .setEmoji("🚀")
+      );
+      await interaction.reply({
+        embeds: [embed],
+        ephemeral: true,
+        components: [ActionRow],
+      });
+    } else {
+      await interaction.reply({
+        embeds: [embed],
+        ephemeral: true,
+      });
+    }
   },
 };

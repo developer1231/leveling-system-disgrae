@@ -1,5 +1,12 @@
 {
-  "channel_id": "1220483755635114024",
+  "channel_id": "1251053549077532762",
   "level_up": true,
-  "max_increment": 4
+  "level_up_message": "",
+  "max_increment": 5,
+  "levelup_message": "🏅**Congratulations** {{member}}🏅\n**New Level:** {{level}}\n**Role Earned:** {{role}}\n**Budz™ Earned:** {{lvlupbudz}}\n**Level Commands:** /rank /leaderboard /stats /richest\n**Dont forget:** *You only gain XP when unmuted!*",
+  "daily_points": 420,
+  "weekly_points": 6000,
+  "work_points": 100,
+  "level_up_points": 420,
+  "daily_gift_cap": 1000
 }

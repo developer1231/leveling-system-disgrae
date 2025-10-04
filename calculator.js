@@ -1,6 +1,7 @@
 function getXpFromLevel(level) {
-  const base = 100;
-  const exp = 1.5;
+  const base = 35;
+  const exp = 2.618;
+
   return Math.floor(base * Math.pow(level, exp));
 }
 

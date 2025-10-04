@@ -57,6 +57,14 @@ function run(query, params = []) {
 
 async function Initialization() {
   try {
+    await run(`CREATE TABLE IF NOT EXISTS shop (
+      id TEXT PRIMARY KEY,
+      price INTEGER,
+      item TEXT, 
+      type TEXT,
+      gain INTEGER,
+      role_id TEXT
+      );`);
     await run(`CREATE TABLE IF NOT EXISTS increments (
       role_id TEXT PRIMARY KEY, 
       increment INTEGER
@@ -71,6 +79,41 @@ async function Initialization() {
     await run(`create table if not exists blacklist (
         channel_id TEXT PRIMARY KEY
         );`);
+    await run(`create table if not exists roles (
+        level INTEGER PRIMARY KEY,
+        role_id TEXT
+        );`);
+
+    await run(
+      `create table if not exists economy (user_id TEXT PRIMARY KEY, coins INTEGER, items TEXT, daily BIGINT, weekly BIGINT, work BIGINT, gift_cap INTEGER)`
+    );
+    await run(`CREATE TABLE IF NOT EXISTS drop_settings (
+      id TEXT PRIMARY KEY,
+  guild_id TEXT
+  enabled INTEGER DEFAULT 1,
+  title TEXT,
+  message TEXT,
+  color TEXT,
+  image_url TEXT,
+  drop_channel TEXT,
+  ping_roles TEXT,
+  xp_amount INTEGER DEFAULT 0,
+  budz_amount INTEGER DEFAULT 0,
+  store_items TEXT,
+  msg_requirement INTEGER DEFAULT 0,
+  blacklisted_channels TEXT);`);
+    await run(`CREATE TABLE IF NOT EXISTS active_drops (
+     id TEXT PRIMARY KEY,
+      guild_id TEXT,
+  message_id TEXT,
+  channel_id TEXT,
+  xp_amount INTEGER,
+  budz_amount INTEGER,
+  store_items TEXT,
+  claimed_by TEXT,
+  expires_at INTEGER
+);
+`);
     console.log("created table users");
   } catch (err) {
     console.error("Initialization error:", err);

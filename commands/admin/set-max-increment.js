@@ -76,22 +76,39 @@ module.exports = {
           Date.now() / 1000
         )}:R>`
       );
-    const adminChannel = await interaction.guild.channels.fetch(
-      process.env.ADMIN_CHANNEL
-    );
+    const path = require("path");
+    const logsPath = path.join(__dirname, "../../logs.json");
+    function loadLogs() {
+      if (!fs.existsSync(logsPath)) return {};
+      return JSON.parse(fs.readFileSync(logsPath, "utf8"));
+    }
+    let message;
+    const logs = loadLogs();
+    if (logs["highbotLogging"]) {
+      const adminChannel = await interaction.guild.channels.fetch(
+        process.env.ADMIN_CHANNEL
+      );
 
-    let message = await adminChannel.send({ embeds: [toAdmin] });
-    const ActionRow = new ActionRowBuilder().addComponents(
-      new ButtonBuilder()
-        .setStyle(ButtonStyle.Link)
-        .setURL(message.url)
-        .setLabel("View Admin Log")
-        .setEmoji("🚀")
-    );
-    await interaction.reply({
-      embeds: [embed],
-      ephemeral: true,
-      components: [ActionRow],
-    });
+      message = await adminChannel.send({ embeds: [toAdmin] });
+    }
+    if (message) {
+      const ActionRow = new ActionRowBuilder().addComponents(
+        new ButtonBuilder()
+          .setStyle(ButtonStyle.Link)
+          .setURL(message.url)
+          .setLabel("View Admin Log")
+          .setEmoji("🚀")
+      );
+      await interaction.reply({
+        embeds: [embed],
+        ephemeral: true,
+        components: [ActionRow],
+      });
+    } else {
+      await interaction.reply({
+        embeds: [embed],
+        ephemeral: true,
+      });
+    }
   },
 };
